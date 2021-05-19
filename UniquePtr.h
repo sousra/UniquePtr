@@ -16,8 +16,6 @@ public:
 
     UniquePtr<T>& operator=(T* rawPtr);
 
-    void swap(const UniquePtr<T> other);
-
     void reset();
 
     void reset(T* ptr);
@@ -35,3 +33,72 @@ public:
 private:
     T* _ptr;
 };
+
+template<class T>
+UniquePtr<T>::UniquePtr() {
+    _ptr = nullptr;
+}
+
+template<class T>
+UniquePtr<T>::UniquePtr(T* rawPtr) {
+    _ptr = rawPtr;
+}
+
+template<class T>
+UniquePtr<T>::UniquePtr(UniquePtr<T>&& other) {
+    _ptr = other._ptr;
+    other._ptr = nullptr;
+}
+
+template<class T>
+UniquePtr<T>& UniquePtr<T>::operator=(UniquePtr<T>&& other) {
+    std::swap(_ptr, other._ptr);
+}
+
+template<class T>
+UniquePtr<T>::~UniquePtr() {
+    delete[] _ptr;
+}
+
+template<class T>
+UniquePtr<T>& UniquePtr<T>::operator=(T* rawPtr) {
+    delete[] _ptr;
+    _ptr = rawPtr;
+}
+
+template<class T>
+void UniquePtr<T>::reset() {
+    delete[] _ptr;
+    _ptr = nullptr;
+}
+
+template<class T>
+void UniquePtr<T>::reset(T* ptr) {
+    delete[] _ptr;
+    _ptr = ptr;
+}
+
+template<class T>
+void UniquePtr<T>::release() {
+    _ptr = nullptr;
+}
+
+template<class T>
+UniquePtr<T>::operator bool() const {
+    return _ptr ? true : false;
+}
+
+template<class T>
+T& UniquePtr<T>::operator*() const {
+    return *_ptr;
+}
+
+template<class T>
+T* UniquePtr<T>::operator->() const {
+    return _ptr;
+}
+
+template<class T>
+T* UniquePtr<T>::get() const {
+    return _ptr;
+}
